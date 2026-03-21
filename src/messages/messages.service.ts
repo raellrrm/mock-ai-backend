@@ -4,13 +4,15 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { PrismaService } from 'src/prisma.service';
 import { AiService } from './ai.service';
 import { Role } from '@prisma/client';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class MessagesService {
 
   constructor(
     private prisma: PrismaService,
-    private aiService: AiService
+    private aiService: AiService,
+    private cloudinaryService: CloudinaryService
   ) { }
 
   async createFromAudio(chatId: string, userId: string, file: Express.Multer.File) {
@@ -30,6 +32,8 @@ export class MessagesService {
       throw new ForbiddenException('Você não tem permissão para enviar mensagens neste chat.');
     }
 
+    const audioUrl = await this.cloudinaryService.uploadAudio(file.buffer);
+
     const context = `Título: ${chat.title}. Tópicos: ${chat.tags.join(', ')}`;
 
     const aiResult = await this.aiService.processAudioAndGetFeedback(
@@ -44,7 +48,7 @@ export class MessagesService {
           chatId,
           role: Role.USER,
           content: aiResult.transcription,
-          audioUrl: 'link_temporario_para_o_arquivo_de_audio',
+          audioUrl: audioUrl,
         },
       }),
 
