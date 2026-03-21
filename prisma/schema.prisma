@@ -44,7 +44,7 @@ model Message {
   chat         Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
   role         Role
   content      String
-  audioUrl     String
+  audioUrl     String?
   aiFeedback   Json?
   createdAt    DateTime @default(now())
 
