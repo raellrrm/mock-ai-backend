@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -24,5 +24,13 @@ export class AuthController {
     @ApiOperation({ summary: 'Remove o cookie de autenticação' })
     async logout(@Res({ passthrough: true }) response: Response) {
         return this.authService.logout(response as any);
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('profile')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Retorna usuario atual' })
+    getProfile(@Request() req) {
+        return req.user;
     }
 }

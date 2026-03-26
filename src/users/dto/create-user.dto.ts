@@ -1,18 +1,26 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { Transform } from "class-transformer";
 
 export class CreateUserDto {
-    @ApiProperty({ example: 'Israel Rodrigues', description: 'Nome completo do usuário' })
-    @IsString({ message: 'O nome deve ser um texto válido.' })
-    @IsNotEmpty({ message: 'O nome não pode estar vazio.' })
+    @ApiProperty({ example: 'João da Silva' })
+    @Transform(({ value }) => value?.trim()) 
+    @IsString()
+    @IsNotEmpty({ message: 'O nome é obrigatório.' })
+    @MinLength(3, { message: 'O nome deve ter no mínimo 3 caracteres.' })
+    @MaxLength(100)
     name: string;
 
-    @ApiProperty({ example: 'israel.dev@email.com', description: 'Email válido para login' })
+    @ApiProperty({ example: 'israel.dev@email.com' })
+    @Transform(({ value }) => value?.trim().toLowerCase())
     @IsEmail({}, { message: 'Forneça um endereço de email válido.' })
+    @MaxLength(255)
     email: string;
 
-    @ApiProperty({ example: 'senha_forte_123', description: 'Senha de acesso', minLength: 6 })
+    @ApiProperty({ example: 'senha_forte_123' })
     @IsString()
-    @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres.' })
+    @IsNotEmpty({ message: 'A senha é obrigatória.' })
+    @MinLength(8, { message: 'A senha deve ter no mínimo 8 caracteres.' })
+    @MaxLength(100)
     password: string;
 }
