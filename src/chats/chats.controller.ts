@@ -27,17 +27,22 @@ export class ChatsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatsService.findOne(+id);
+  @ApiOperation({ summary: 'Retorna informações do chat através do id' })
+  findOne(@Param('id') id: string, @Request() req) {
+    const userId = req.user.sub;
+    return this.chatsService.findOne(id, userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatsService.update(+id, updateChatDto);
+ /* @Patch(':id')
+  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto, @Request() req) {
+    const userId = req.user.sub;
+    return this.chatsService.update(id, updateChatDto, userId); 
   }
+)*/
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatsService.remove(+id);
+  remove(@Param('id') id: string, @Request() req) {
+    const userId = req.user.sub;
+    return this.chatsService.remove(id, userId); 
   }
 }

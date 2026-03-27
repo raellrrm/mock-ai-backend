@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -26,15 +26,35 @@ export class ChatsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
+  async findOne(id: string, userId: string) {
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        id: id,
+        userId: userId
+      }
+    });
+
+    if(!chat) {
+      throw new NotFoundException(`Sessão de chat não encontrada ou sem permissão de acesso.`);
+    }
+
+    return chat;
   }
 
-  update(id: number, updateChatDto: UpdateChatDto) {
-    return `This action updates a #${id} chat`;
-  }
+  /*async update(id: string, updateChatDto: UpdateChatDto, userId: string) {
+    await this.findOne(id, userId);
 
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
+    return this.prisma.chat.update({
+      where: { id: id },
+      data: updateChatDto,
+    });
+  }*/
+
+  async remove(id: string, userId: string) {
+    await this.findOne(id, userId);
+
+    return this.prisma.chat.delete({
+      where: { id: id },
+    });
   }
 }
