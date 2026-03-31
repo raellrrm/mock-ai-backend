@@ -65,7 +65,10 @@ export class MessagesService {
       }),
     ])
 
-    return aiMessage;
+    return {
+      userMessage,
+      aiMessage
+    };
   }
 
   async findAllByChat(chatId: string, userId: string) {
